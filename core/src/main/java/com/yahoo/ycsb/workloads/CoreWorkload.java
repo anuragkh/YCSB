@@ -487,13 +487,13 @@ public class CoreWorkload extends Workload {
       // the number of inserts, and tell the scrambled zipfian generator the number of existing keys
       // plus the number of predicted keys as the total keyspace. then, if the generator picks a key
       // that hasn't been inserted yet, will just ignore it and pick another key. this way, the size of
-      // the keyspace doesn't change from the perspective of the scrambled zipfian generator
+      // the keyspace doesn't change from the perspective of the scrambled zipfian generator      
       final double insertproportion = Double.parseDouble(
           p.getProperty(INSERT_PROPORTION_PROPERTY, INSERT_PROPORTION_PROPERTY_DEFAULT));
       final double theta = Double.parseDouble(p.getProperty(ZIPF_THETA_PROPERTY, ZIPF_THETA_PROPERTY_DEFAULT));
       int opcount = Integer.parseInt(p.getProperty(Client.OPERATION_COUNT_PROPERTY));
       int expectednewkeys = (int) ((opcount) * insertproportion * 2.0); // 2 is fudge factor
-
+      System.out.println("Using ZipfianGenerator with theta value: " + theta);
       keychooser = new ScrambledZipfianGenerator(insertstart, insertstart + insertcount + expectednewkeys, theta);
     } else if (requestdistrib.compareTo("latest") == 0) {
       keychooser = new SkewedLatestGenerator(transactioninsertkeysequence);
