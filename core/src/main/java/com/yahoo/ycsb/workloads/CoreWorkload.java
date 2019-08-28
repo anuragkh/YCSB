@@ -216,6 +216,16 @@ public class CoreWorkload extends Workload {
   public static final String INSERT_PROPORTION_PROPERTY_DEFAULT = "0.0";
 
   /**
+   * The name of the property for the proportion of transactions that are inserts.
+   */
+  public static final String ZIPF_THETA_PROPERTY = "zipftheta";
+
+  /**
+   * The default proportion of transactions that are inserts.
+   */
+  public static final String ZIPF_THETA_PROPERTY_DEFAULT = "0.99";
+
+  /**
    * The name of the property for the proportion of transactions that are scans.
    */
   public static final String SCAN_PROPORTION_PROPERTY = "scanproportion";
@@ -480,10 +490,11 @@ public class CoreWorkload extends Workload {
       // the keyspace doesn't change from the perspective of the scrambled zipfian generator
       final double insertproportion = Double.parseDouble(
           p.getProperty(INSERT_PROPORTION_PROPERTY, INSERT_PROPORTION_PROPERTY_DEFAULT));
+      final double theta = Double.parseDouble(p.getProperty(ZIPF_THETA_PROPERTY, ZIPF_THETA_PROPERTY_DEFAULT));
       int opcount = Integer.parseInt(p.getProperty(Client.OPERATION_COUNT_PROPERTY));
       int expectednewkeys = (int) ((opcount) * insertproportion * 2.0); // 2 is fudge factor
 
-      keychooser = new ScrambledZipfianGenerator(insertstart, insertstart + insertcount + expectednewkeys);
+      keychooser = new ScrambledZipfianGenerator(insertstart, insertstart + insertcount + expectednewkeys, theta);
     } else if (requestdistrib.compareTo("latest") == 0) {
       keychooser = new SkewedLatestGenerator(transactioninsertkeysequence);
     } else if (requestdistrib.equals("hotspot")) {
